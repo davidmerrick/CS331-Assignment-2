@@ -25,7 +25,7 @@ public class MiniMax implements Player {
      * @return The next move
      */
     public Position getNextMove(TicTacToeBoard state) {
-        nextPosition = minimaxDecision(state);
+        nextPosition = decideMiniMax(state);
 
         return nextPosition;
     }
@@ -35,48 +35,6 @@ public class MiniMax implements Player {
      */
     public int getPlayerType() {
         return MINIMAX_PLAYER;
-    }
-
-    /**
-     * Generates the list of successor board states
-     * @param state The current board state in the game
-     * @return The list of successor board states
-     */
-    private List<TicTacToeBoard> successors(TicTacToeBoard state) {
-        //Create a new list for the successors
-        List<TicTacToeBoard> successorList = new ArrayList<TicTacToeBoard>();
-
-        //Generate the successors and append them to the successor array.
-        for (int i=0; i<3; i++) { //Loop through the rows
-            for (int j=0; j<3; j++) { //Loop through the columns
-                //Only generate the list of successors initially
-                if (state.getState(i, j) == TicTacToeBoard.BLANK) {
-                    //Clone the current board so we can append it to the
-                    //successorList without interfering with it
-                    TicTacToeBoard s = (TicTacToeBoard) state.clone();
-
-                    //Find out who's turn it is
-                    int turn = state.getTurn();
-
-                    try {
-                        //Play the game.
-                        s.setState(i, j, turn);
-                    }
-                    catch (Exception e) {
-                        //Invalid player symbol
-                    }
-
-                    //Set the next player.
-                    int nextTurn = getNextPlayer(turn);
-                    s.setTurn(nextTurn);
-
-                    //Append board to list of successors.
-                    successorList.add(s);
-                }
-            }
-        }
-
-        return successorList;
     }
 
     private int getNextPlayer(int turn) {
@@ -127,19 +85,26 @@ public class MiniMax implements Player {
     }
 
     /**
-     * Return minimax decision.
+     * Returns the minimax decision
      * @param state The current board state in the game
-     * @return The best move.
+     * @return The optimal move
      */
-    private Position minimaxDecision(TicTacToeBoard state) {
-        Position bestMove = new Position();
+    private Position decideMiniMax(TicTacToeBoard state) {
+        //Create a new Position object to represent the optimal move
+        Position optimalMove = new Position();
 
+        //Find out who's turn it is
         int turn = state.getTurn();
+
+
         int v;
         if (turn == TicTacToeBoard.PLAYER_X) {
-            v = maxValue(state);   // Player X maximizes.
-        }
-        else {
+            //It's Player X's turn,
+            //Maximize Player X
+            v = maxValue(state);
+        } else {
+            //It's Player O's turn,
+            //Minimize Player O
             v = minValue(state);   // Player O minimizes.
         }
 
@@ -153,17 +118,59 @@ public class MiniMax implements Player {
             }
 
             if (sVal == v) {
-                bestMove = s.getPreviousMove();
+                optimalMove = s.getPreviousMove();
             }
         }
 
-        return bestMove;
+        return optimalMove;
     }
 
     /**
-     * Return maximum value of game state.
-     * @param state The current board state in the game.
-     * @return The maximum value.
+     * Generates the list of successor board states
+     * @param state The current board state in the game
+     * @return The list of successor board states
+     */
+    private List<TicTacToeBoard> successors(TicTacToeBoard state) {
+        //Create a new list for the successors
+        List<TicTacToeBoard> successorList = new ArrayList<TicTacToeBoard>();
+
+        //Generate the successors and append them to the successor array.
+        for (int i=0; i<3; i++) { //Loop through the rows
+            for (int j=0; j<3; j++) { //Loop through the columns
+                //Only generate the list of successors initially
+                if (state.getState(i, j) == TicTacToeBoard.BLANK) {
+                    //Clone the current board so we can append it to the
+                    //successorList without interfering with it
+                    TicTacToeBoard s = (TicTacToeBoard) state.clone();
+
+                    //Find out who's turn it is
+                    int turn = state.getTurn();
+
+                    try {
+                        //Play the game.
+                        s.setState(i, j, turn);
+                    }
+                    catch (Exception e) {
+                        //Invalid player symbol
+                    }
+
+                    //Set the next player.
+                    int nextTurn = getNextPlayer(turn);
+                    s.setTurn(nextTurn);
+
+                    //Append board to list of successors.
+                    successorList.add(s);
+                }
+            }
+        }
+
+        return successorList;
+    }
+
+    /**
+     * Returns the max value of the game state
+     * @param state The current board state in the game
+     * @return The max value
      */
     private int maxValue(TicTacToeBoard state) {
         if (terminalTest(state)) {
@@ -180,9 +187,9 @@ public class MiniMax implements Player {
     }
 
     /**
-     * Return minimum value of game state.
-     * @param state The current board state in the game.
-     * @return The minimum value.
+     * Returns min value of game state
+     * @param state The current board state in the game
+     * @return The min value
      */
     private int minValue(TicTacToeBoard state) {
         if (terminalTest(state)) {
