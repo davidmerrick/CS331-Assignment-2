@@ -1,8 +1,7 @@
 //package edu.oregonstate.eecs.cs331.assn2;
 
-import java.util.*;
 import static java.lang.Math.*;
-
+import java.util.*;
 
 /**
  * This class represents the module for minimax.
@@ -59,11 +58,12 @@ public class MiniMax implements Player {
                     //Find out who's turn it is
                     int turn = state.getTurn();
 
-                    //Play the game.
                     try {
+                        //Play the game.
                         s.setState(i, j, turn);
                     }
                     catch (Exception e) {
+                        //Invalid player symbol
                     }
 
                     //Set the next player.
@@ -89,25 +89,25 @@ public class MiniMax implements Player {
     }
 
     /**
-     * Return utility of game state.
+     * Returns the utility of the game state
      * @param state The current board state in the game
-     * @return The utility of the game state. 1 if Player X wins, -1 if Player
-     *     O wins, 0 if draw.
+     * @return 1 (Player X wins), -1 (Player O wins), or 0 (tie).
      */
     private int utility(TicTacToeBoard state) {
-        int u = 0;
+        int utility = 0;
         try {
             if (state.isWin(TicTacToeBoard.PLAYER_X)) {
-                u = 1;
+                utility = 1;
             }
             else if (state.isWin(TicTacToeBoard.PLAYER_O)) {
-                u = -1;
+                utility = -1;
             }
         }
         catch (Exception e) {
+            //player is not a legal player index
         }
 
-        return u;
+        return utility;
     }
 
     /**
