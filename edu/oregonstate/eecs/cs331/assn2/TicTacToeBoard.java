@@ -61,6 +61,11 @@ public class TicTacToeBoard {
 	 */
 	private int numEmptySquares;
 
+    /**
+     * Previous move by either player.
+     */
+    private Position previousMove = new Position();
+
 	/**
 	 * The contructor for the class. It sets the current state of the game to
 	 * the initial state of the game.
@@ -76,6 +81,20 @@ public class TicTacToeBoard {
 			}
 		}
 	}
+
+    /**
+     * Returns the previous move by either player.
+     */
+    public Position getPreviousMove() {
+        return previousMove;
+    }
+
+    /**
+     * Sets the previous move.
+     */
+    private void setPreviousMove(int row, int col) {
+        previousMove = new Position(row, col);
+    }
 
 	/**
 	 * The method to use when needing to update the game board's state.
@@ -96,6 +115,7 @@ public class TicTacToeBoard {
 			throw new Exception("Invalid player symbol");
 		}
 		square[row][col] = playerSymbol;
+        setPreviousMove(row, col);
 	}
 
 	/**
@@ -122,6 +142,7 @@ public class TicTacToeBoard {
 			throw new Exception("Invalid player symbol");
 		}
 		square[row][col] = playerSymbol;
+        setPreviousMove(row, col);
 	}
 
 	/**

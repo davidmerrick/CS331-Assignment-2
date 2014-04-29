@@ -11,7 +11,7 @@ import javax.swing.*;
  */
 public class GameFrame extends JFrame {
 	
-	/**
+	/**q
 	 * Command line strings that specify the types of the players
 	 */
 	private final static String HUMAN_PLAYER_STRING = "human";
