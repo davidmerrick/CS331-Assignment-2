@@ -3,6 +3,7 @@
 import java.util.*;
 import static java.lang.Math.*;
 
+
 /**
  * This class represents the module for minimax.
  * @author David Merrick
@@ -10,75 +11,79 @@ import static java.lang.Math.*;
  */
 
 public class MiniMax implements Player {
-    Position nextPos = new Position();
-
     /**
      * Constructor
      *
      */
     public MiniMax() {
-
     }
 
+    Position nextPosition = new Position();
+
     /**
-     * Return the next move.
+     * Returns the next move.
      * @param state The current board state in the game
      * @return The next move
      */
-    public Position getNextMove(TicTacToeBoard state) throws Exception {
-        nextPos = minimaxDecision(state);
+    public Position getNextMove(TicTacToeBoard state) {
+        nextPosition = minimaxDecision(state);
 
-        return nextPos;
+        return nextPosition;
     }
 
     /**
-     * Return the player type.
+     * Returns the player type.
      */
     public int getPlayerType() {
         return MINIMAX_PLAYER;
     }
 
     /**
-     * Return list of successors.
+     * Returns the list of successors (an arrayList of TicTacToeBoard objects).
      * @param state The current board state in the game
      * @return The list of successors.
      */
     private List<TicTacToeBoard> successors(TicTacToeBoard state) {
-        List<TicTacToeBoard> succ = new ArrayList<TicTacToeBoard>();
+        //Create a new list for the successors.
+        List<TicTacToeBoard> successorList = new ArrayList<TicTacToeBoard>();
 
-        // Find out who's turn it is
+        //Find out who's turn it is
         int turn = state.getTurn();
 
-        // Generate successors and append them to successor array.
-        for (int i=0; i<3; i++) {
-            for (int j=0; j<3; j++) {
+        //Generate the successors and append them to the successor array.
+        for (int i=0; i<3; i++) { //Loop through the rows
+            for (int j=0; j<3; j++) { //Loop through the columns
                 if (state.getState(i, j) == TicTacToeBoard.BLANK) {
-                    // Make copy of game state.
-                    TicTacToeBoard s = new TicTacToeBoard();
-                    s = (TicTacToeBoard) state.clone();
+                    //Clone the current board so we can append it to the
+                    //successorList without interfering with it
+                    TicTacToeBoard s = (TicTacToeBoard) state.clone();
 
-                    // Play.
+                    //Play the game.
                     try {
                         s.setState(i, j, turn);
                     }
                     catch (Exception e) {
                     }
 
-                    // Set next player.
-                    if (turn == TicTacToeBoard.PLAYER_X) {
-                        s.setTurn(TicTacToeBoard.PLAYER_O);
-                    }
-                    else {
-                        s.setTurn(TicTacToeBoard.PLAYER_X);
-                    }
+                    //Set the next player.
+                    s.setTurn(getNextPlayer(turn));
 
-                    // Append to list of successors.
-                    succ.add(s);
+                    //Append board to list of successors.
+                    successorList.add(s);
                 }
             }
         }
 
-        return succ;
+        return successorList;
+    }
+
+    private int getNextPlayer(int turn) {
+        //return next player.
+        if (turn == TicTacToeBoard.PLAYER_X) {
+            return TicTacToeBoard.PLAYER_O;
+        }
+
+        return TicTacToeBoard.PLAYER_X;
     }
 
     /**
