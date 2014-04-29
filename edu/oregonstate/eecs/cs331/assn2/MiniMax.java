@@ -166,11 +166,11 @@ public class MiniMax implements Player {
         //Create a new list for the successors
         List<TicTacToeBoard> successorList = new ArrayList<TicTacToeBoard>();
 
-        //Generate the successor board states and append them to the successor list.
-        for (int i=0; i<3; i++) { //Rows
-            for (int j=0; j<3; j++) { //Columns
+        //Generate the successor board states and append them to the successor list
+        for (int row=0; row<3; row++) {
+            for (int col=0; col<3; col++) {
                 //Only generate the list of successors initially (when board is blank)
-                if (state.getState(i, j) == TicTacToeBoard.BLANK) {
+                if (state.getState(row, col) == TicTacToeBoard.BLANK) {
                     //Clone the current board so we can append it to the
                     //successorList without interfering with it
                     TicTacToeBoard b = (TicTacToeBoard) state.clone();
@@ -180,7 +180,7 @@ public class MiniMax implements Player {
 
                     try {
                         //"play" the game ahead
-                        b.setState(i, j, turn);
+                        b.setState(row, col, turn);
                     } catch (Exception e) {
                         //Invalid player symbol
                     }
