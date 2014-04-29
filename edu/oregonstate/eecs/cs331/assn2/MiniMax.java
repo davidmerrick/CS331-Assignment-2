@@ -39,24 +39,25 @@ public class MiniMax implements Player {
     }
 
     /**
-     * Returns the list of successors (an arrayList of TicTacToeBoard objects).
+     * Generates the list of successor board states
      * @param state The current board state in the game
-     * @return The list of successors.
+     * @return The list of successor board states
      */
     private List<TicTacToeBoard> successors(TicTacToeBoard state) {
-        //Create a new list for the successors.
+        //Create a new list for the successors
         List<TicTacToeBoard> successorList = new ArrayList<TicTacToeBoard>();
-
-        //Find out who's turn it is
-        int turn = state.getTurn();
 
         //Generate the successors and append them to the successor array.
         for (int i=0; i<3; i++) { //Loop through the rows
             for (int j=0; j<3; j++) { //Loop through the columns
+                //Only generate the list of successors initially
                 if (state.getState(i, j) == TicTacToeBoard.BLANK) {
                     //Clone the current board so we can append it to the
                     //successorList without interfering with it
                     TicTacToeBoard s = (TicTacToeBoard) state.clone();
+
+                    //Find out who's turn it is
+                    int turn = state.getTurn();
 
                     //Play the game.
                     try {
@@ -66,7 +67,8 @@ public class MiniMax implements Player {
                     }
 
                     //Set the next player.
-                    s.setTurn(getNextPlayer(turn));
+                    int nextTurn = getNextPlayer(turn);
+                    s.setTurn(nextTurn);
 
                     //Append board to list of successors.
                     successorList.add(s);
@@ -78,7 +80,7 @@ public class MiniMax implements Player {
     }
 
     private int getNextPlayer(int turn) {
-        //return next player.
+        //return next player's turn.
         if (turn == TicTacToeBoard.PLAYER_X) {
             return TicTacToeBoard.PLAYER_O;
         }
