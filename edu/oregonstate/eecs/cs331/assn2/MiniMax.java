@@ -1,8 +1,3 @@
-//package edu.oregonstate.eecs.cs331.assn2;
-
-import static java.lang.Math.*;
-import java.util.*;
-
 /**
  * This class represents the module for minimax.
  * @author David Merrick
@@ -12,6 +7,9 @@ import java.util.*;
  * getPlayerType(): returns player type
  *
  */
+
+import java.util.*;
+import static java.lang.Math.*;
 
 public class MiniMax implements Player {
     /**
@@ -26,7 +24,7 @@ public class MiniMax implements Player {
     /**
      * Returns the next move.
      * @param state The current board state in the game
-     * @return The next move
+     * @return The next position
      */
     public Position getNextMove(TicTacToeBoard state) {
         //Make a miniMax decision to determine the optimal next position
@@ -36,12 +34,15 @@ public class MiniMax implements Player {
     }
 
     /**
-     * Returns the player type.
+     * Returns the player type
      */
     public int getPlayerType() {
         return MINIMAX_PLAYER;
     }
 
+    /**
+     * Returns the integer value of the next player
+     */
     private int getNextPlayer(int turn) {
         //return next player's turn.
         if (turn == TicTacToeBoard.PLAYER_X) {
@@ -52,7 +53,8 @@ public class MiniMax implements Player {
     }
 
     /**
-     * Returns the getUtility of the game state
+     * Returns the utility value of the game state.
+     * Only called when game is in a terminal state.
      * @param state The current board state in the game
      * @return 1 (Player X wins), -1 (Player O wins), or 0 (tie).
      */
@@ -61,12 +63,10 @@ public class MiniMax implements Player {
         try {
             if (state.isWin(TicTacToeBoard.PLAYER_X)) {
                 utility = 1;
-            }
-            else if (state.isWin(TicTacToeBoard.PLAYER_O)) {
+            } else if (state.isWin(TicTacToeBoard.PLAYER_O)) {
                 utility = -1;
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             //player is not a legal player index
         }
 
@@ -76,7 +76,7 @@ public class MiniMax implements Player {
     /**
      * Returns whether the game is over
      * @param state The current board state in the game
-     * @return True if game over, otherwise false
+     * @return Boolean. True if game over, otherwise false
      */
     private boolean isGameOver(TicTacToeBoard state) {
         try {
@@ -98,20 +98,18 @@ public class MiniMax implements Player {
         //Create a new Position object to represent the optimal move
         Position optimalMove = new Position();
 
-        //Find out who's turn it is
+        //Get current player's turn
         int turn = state.getTurn();
 
         //v represents the utility value of the game state
         int v;
 
         if (turn == TicTacToeBoard.PLAYER_X) {
-            //It's Player X's turn,
-            //Maximize Player X
+            //Player X's turn, maximize player X
             v = maxValue(state);
         } else {
-            //It's Player O's turn,
-            //Minimize Player O
-            v = minValue(state);   // Player O minimizes.
+            //Player O's turn, minimize Player O
+            v = minValue(state);
         }
 
         //Call the successors method to generate list of successor board states
@@ -141,32 +139,31 @@ public class MiniMax implements Player {
         //Create a new list for the successors
         List<TicTacToeBoard> successorList = new ArrayList<TicTacToeBoard>();
 
-        //Generate the successors and append them to the successor array.
+        //Generate the successors and append them to the successor list.
         for (int i=0; i<3; i++) { //Loop through the rows
             for (int j=0; j<3; j++) { //Loop through the columns
                 //Only generate the list of successors initially
                 if (state.getState(i, j) == TicTacToeBoard.BLANK) {
                     //Clone the current board so we can append it to the
                     //successorList without interfering with it
-                    TicTacToeBoard s = (TicTacToeBoard) state.clone();
+                    TicTacToeBoard b = (TicTacToeBoard) state.clone();
 
-                    //Find out who's turn it is
+                    //Get current player'b turn
                     int turn = state.getTurn();
 
                     try {
-                        //Play the game.
-                        s.setState(i, j, turn);
-                    }
-                    catch (Exception e) {
+                        //Set the game state
+                        b.setState(i, j, turn);
+                    } catch (Exception e) {
                         //Invalid player symbol
                     }
 
                     //Set the next player.
                     int nextTurn = getNextPlayer(turn);
-                    s.setTurn(nextTurn);
+                    b.setTurn(nextTurn);
 
                     //Append board to list of successors.
-                    successorList.add(s);
+                    successorList.add(b);
                 }
             }
         }
@@ -175,38 +172,46 @@ public class MiniMax implements Player {
     }
 
     /**
-     * Returns the max value of the game state
+     * Returns min value of game state
      * @param state The current board state in the game
-     * @return The max value
+     * @return The min value
      */
-    private int maxValue(TicTacToeBoard state) {
+    private int minValue(TicTacToeBoard state) {
+        //Test if the game is over in current state
+        //If so, return utility value
         if (isGameOver(state)) {
             return getUtility(state);
         }
 
-        int v = -1000000;
+        //Set v to a "large" value (Just needs to be greater than 1)
+        int v = 2;
 
-        for (TicTacToeBoard s : successors(state)) {
-            v = max(v, minValue(s));
+        //Iterate through the successor list, set v to the min value
+        for (TicTacToeBoard b : successors(state)) {
+            v = min(v, maxValue(b));
         }
 
         return v;
     }
 
     /**
-     * Returns min value of game state
+     * Returns the max value of the game state
      * @param state The current board state in the game
-     * @return The min value
+     * @return The max value
      */
-    private int minValue(TicTacToeBoard state) {
+    private int maxValue(TicTacToeBoard state) {
+        //Test if the game is over in current state
+        //If so, return utility value
         if (isGameOver(state)) {
             return getUtility(state);
         }
 
-        int v = 1000000;
+        //Set v to a "small" value (Just needs to be less than -1)
+        int v = -2;
 
-        for (TicTacToeBoard s : successors(state)) {
-            v = min(v, maxValue(s));
+        //Iterate through the successor list, set v to the max value
+        for (TicTacToeBoard b : successors(state)) {
+            v = max(v, minValue(b));
         }
 
         return v;
