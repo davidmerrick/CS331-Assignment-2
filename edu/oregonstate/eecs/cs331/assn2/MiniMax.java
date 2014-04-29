@@ -2,13 +2,18 @@
  * This class represents the module for minimax.
  * @author David Merrick
  *
+ * Code structure based on:
+ * http://youtu.be/OkP8BAwfO24
+ *
  * public methods:
  * getNextMove(): returns next move
  * getPlayerType(): returns player type
  *
- * The computer is player X. Human is player O
- * So we want to maximize each node's utility value if it's player X's turn.
- * And minimize each node's utility value if it's player O's turn.
+ * The premise:
+ *
+ * The computer is MAX. Human is MIN.
+ * So we want to maximize each node's utility value if it's MAX's turn.
+ * And minimize each node's utility value if it's MIN's turn.
  *
  */
 
@@ -22,6 +27,10 @@ public class MiniMax implements Player {
      */
     public MiniMax() {
     }
+
+    //The players
+    int MAX = TicTacToeBoard.PLAYER_X;
+    int MIN = TicTacToeBoard.PLAYER_O;
 
     Position nextPosition = new Position();
 
@@ -49,11 +58,11 @@ public class MiniMax implements Player {
      */
     private int getNextPlayer(int turn) {
         //return next player's turn.
-        if (turn == TicTacToeBoard.PLAYER_X) {
-            return TicTacToeBoard.PLAYER_O;
+        if (turn == MAX) {
+            return MIN;
         }
 
-        return TicTacToeBoard.PLAYER_X;
+        return MAX;
     }
 
     /**
@@ -62,15 +71,15 @@ public class MiniMax implements Player {
      * The purpose is to give a value to a terminal state.
      * High values are good for MAX and bad for MIN.
      * @param state The current board state in the game
-     * @return 1 (X wins), -1 (O wins), or 0 (tie).
+     * @return 1 (MAX wins), -1 (MIN wins), or 0 (tie).
      */
     private int getUtility(TicTacToeBoard state) {
         try {
-            if (state.isWin(TicTacToeBoard.PLAYER_X)) {
-                //X wins. Good!
+            if (state.isWin(MAX)) {
+                //MAX wins. Good!
                 return 1;
-            } else if(state.isWin(TicTacToeBoard.PLAYER_O)) {
-                //O wins. Bad!
+            } else if(state.isWin(MIN)) {
+                //MIN wins. Bad!
                 return -1;
             }
         } catch (Exception e) {
@@ -113,11 +122,11 @@ public class MiniMax implements Player {
         int v;
 
         //Find out which player's turn it is. This determines whether to maximize or minimize.
-        if (turn == TicTacToeBoard.PLAYER_X) {
-            //X's turn, maximize player X. Find the maximum possible value recursively.
+        if (turn == MAX) {
+            //MAX's turn, maximize; Find the maximum possible value recursively.
             v = maxValue(state);
         } else {
-            //O's turn, minimize player O. Find the minimum possible value recursively.
+            //MIN's turn, minimize; Find the minimum possible value recursively.
             v = minValue(state);
         }
 
@@ -128,7 +137,7 @@ public class MiniMax implements Player {
             int bUtil;
 
             //Find out which player's turn it is. This determines whether to maximize or minimize.
-            if (turn == TicTacToeBoard.PLAYER_X) {
+            if (turn == MAX) {
                 //Minimize the maximum utility value of player X. Find this value recursively.
                 bUtil = minValue(b);
             } else {
@@ -166,7 +175,7 @@ public class MiniMax implements Player {
                     //successorList without interfering with it
                     TicTacToeBoard b = (TicTacToeBoard) state.clone();
 
-                    //Get current player'b turn
+                    //Get current player's turn
                     int turn = state.getTurn();
 
                     try {
