@@ -4,6 +4,7 @@
  *
  * Code structure based on:
  * http://youtu.be/OkP8BAwfO24
+ * http://classes.engr.oregonstate.edu/eecs/spring2014/cs331/slides/AdversarialSearch1.2pp.pdf
  *
  * public methods:
  * getNextMove(): returns next move
@@ -29,10 +30,9 @@ public class MiniMax implements Player {
     }
 
     //The players
+    //We will use the convention that the X player is the maximizing player and the O player is the minimizing player.
     int MAX = TicTacToeBoard.PLAYER_X;
     int MIN = TicTacToeBoard.PLAYER_O;
-
-    Position nextPosition = new Position();
 
     /**
      * Returns the next move.
@@ -41,9 +41,7 @@ public class MiniMax implements Player {
      */
     public Position getNextMove(TicTacToeBoard state) {
         //Make a miniMax decision to determine the optimal next position
-        nextPosition = decideMiniMax(state);
-
-        return nextPosition;
+        return decideMiniMax(state);
     }
 
     /**
@@ -54,7 +52,7 @@ public class MiniMax implements Player {
     }
 
     /**
-     * Returns the integer value of the next player
+     * Returns the integer value of the next player to determine the turn
      */
     private int getNextPlayer(int turn) {
         //return next player's turn.
@@ -83,15 +81,16 @@ public class MiniMax implements Player {
                 return -1;
             }
         } catch (Exception e) {
+            //state.isWin can throw an exception in this case:
             //player is not a legal player index
         }
 
-        //It was a tie
+        //It was a tie. Meh.
         return 0;
     }
 
     /**
-     * Returns whether the game is over
+     * Checks whether the game is over
      * @param state The current board state in the game
      * @return Boolean. True if game over, otherwise false
      */
@@ -118,16 +117,16 @@ public class MiniMax implements Player {
         //Get current player's turn
         int turn = state.getTurn();
 
-        //v represents the maximum or minimum possible utility value of any successor state
-        int v;
+        //value represents the maximum or minimum possible utility value of any successor state
+        int value;
 
         //Find out which player's turn it is. This determines whether to maximize or minimize.
         if (turn == MAX) {
             //MAX's turn, maximize; Find the maximum possible value recursively.
-            v = maxValue(state);
+            value = maxValue(state);
         } else {
             //MIN's turn, minimize; Find the minimum possible value recursively.
-            v = minValue(state);
+            value = minValue(state);
         }
 
         //Call the successors method to generate a list of possible successor board states
@@ -145,7 +144,7 @@ public class MiniMax implements Player {
                 bUtil = maxValue(b);
             }
 
-            if (bUtil == v) {
+            if (bUtil == value) {
                 //Found the optimal move and it's the previous one. Break and return it.
                 optimalMove = b.getPreviousMove();
                 break;
@@ -156,9 +155,10 @@ public class MiniMax implements Player {
     }
 
     /**
-     * Successor function
-     * Generates the list of successor board states from the current state
-     * This list has all possible moves
+     * Successor method
+     *
+     * This method takes the current state of the game and generates a list of
+     * all the successors that can be reached within one move of the current state.
      * @param state The current board state in the game
      * @return The list of successor board states
      */
@@ -169,7 +169,7 @@ public class MiniMax implements Player {
         //Generate the successor board states and append them to the successor list
         for (int row=0; row<3; row++) {
             for (int col=0; col<3; col++) {
-                //Only generate the list of successors initially (when board is blank)
+                //Only act if the square is blank
                 if (state.getState(row, col) == TicTacToeBoard.BLANK) {
                     //Clone the current board so we can append it to the
                     //successorList without interfering with it
@@ -209,16 +209,16 @@ public class MiniMax implements Player {
             return getUtility(state);
         }
 
-        //Set v to "+infinity" (Just needs to be greater than 1)
-        int v = 2;
+        //Set value to "+infinity" (Just needs to be greater than 1)
+        int value = 2;
 
         //Iterate through the successor list
         //Recursively find the minimum of the max values of all the successor states
         for (TicTacToeBoard b : getSuccessors(state)) {
-            v = min(v, maxValue(b));
+            value = Math.min(value, maxValue(b));
         }
 
-        return v;
+        return value;
     }
 
     /**
@@ -232,15 +232,15 @@ public class MiniMax implements Player {
             return getUtility(state);
         }
 
-        //Set v to "-infinity" (Just needs to be less than -1)
-        int v = -2;
+        //Set value to "-infinity" (Just needs to be less than -1)
+        int value = -2;
 
         //Iterate through the successor list
         //Recursively find the maximum of the min values of all the successor states
         for (TicTacToeBoard b : getSuccessors(state)) {
-            v = max(v, minValue(b));
+            value = Math.max(value, minValue(b));
         }
 
-        return v;
+        return value;
     }
 }

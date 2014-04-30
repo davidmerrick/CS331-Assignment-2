@@ -62,7 +62,7 @@ public class TicTacToeBoard {
 	private int numEmptySquares;
 
     /**
-     * Previous move by either player.
+     * Keep track of the previous move
      */
     private Position previousMove = new Position();
 
@@ -83,7 +83,7 @@ public class TicTacToeBoard {
 	}
 
     /**
-     * Returns the previous move by either player.
+     * Returns the previous move
      */
     public Position getPreviousMove() {
         return previousMove;
